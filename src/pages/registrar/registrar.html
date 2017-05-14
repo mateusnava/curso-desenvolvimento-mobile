@@ -41,10 +41,12 @@
     <ion-item>
       <ion-textarea [(ngModel)]="registro.caracteristicas" placeholder="Características"></ion-textarea>
     </ion-item>
+
+      <ion-card *ngIf="registro.foto">
+        <img src="{{registro.foto}}"/>
+      </ion-card>
   </ion-list>
 
-  <img src="{{registro.foto}}" *ngIf="registro.foto">
-  
   <button [disabled]="!isValid()" ion-button block (click)="registrar()">Registrar</button>
   <span *ngIf="!isValid()" padding-top><b>Preencha todos os campos</b></span>
 </ion-content>

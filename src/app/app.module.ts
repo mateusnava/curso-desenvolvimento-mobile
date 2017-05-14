@@ -9,11 +9,15 @@ import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 import { RegistrarPage } from '../pages/registrar/registrar';
 import { MapaPage } from '../pages/mapa/mapa';
+import { ListagemPage } from '../pages/listagem/listagem';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpModule } from '@angular/http';
 import { Camera } from '@ionic-native/camera';
+import { Geolocation } from '@ionic-native/geolocation';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
+
 
 @NgModule({
   declarations: [
@@ -23,7 +27,8 @@ import { Camera } from '@ionic-native/camera';
     HomePage,
     TabsPage,
     RegistrarPage,
-    MapaPage
+    MapaPage,
+    ListagemPage
   ],
   imports: [
     BrowserModule,
@@ -38,13 +43,16 @@ import { Camera } from '@ionic-native/camera';
     HomePage,
     TabsPage,
     RegistrarPage,
-    MapaPage
+    MapaPage,
+    ListagemPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    Camera
+    Camera,
+    Geolocation,
+    AndroidPermissions
   ]
 })
 export class AppModule {}

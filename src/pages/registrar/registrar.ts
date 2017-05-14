@@ -6,6 +6,7 @@ import 'rxjs/add/operator/toPromise';
 
 import { LoadingController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
+import { Geolocation } from '@ionic-native/geolocation';
 
 @IonicPage()
 @Component({
@@ -17,7 +18,7 @@ export class RegistrarPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       private http: Http, private loadingController: LoadingController,
-      private camera: Camera) {
+      private camera: Camera, private geolocation: Geolocation) {
     this.registro = {};
   }
 
@@ -42,28 +43,39 @@ export class RegistrarPage {
     });
     loader.present(); // Exibe Loader
 
-    let objetoEnvio = {
-    	register: {
-    		nome: this.registro.nome,
-    		telefone: this.registro.telefone,
-    		tipo: this.registro.tipo,
-    		caracteristicas: this.registro.caracteristicas
-    	}
+    let optionsGps = {
+      enableHighAccuracy: true,
+      maximumAge: 0
     };
+    this.geolocation.getCurrentPosition(optionsGps).then((resp) => {
+      let objetoEnvio = {
+      	register: {
+      		nome: this.registro.nome,
+      		telefone: this.registro.telefone,
+      		tipo: this.registro.tipo,
+      		caracteristicas: this.registro.caracteristicas,
+          foto: this.registro.foto,
+          latitude: resp.coords.latitude,
+          longitude: resp.coords.longitude
+      	}
+      };
 
-    this.http.post(url, objetoEnvio).toPromise().then((result) => {
-      console.log(result);
-      this.registro = {};
-      loader.dismiss();
-      alert('Ocorrência salva com sucesso!');
+      this.http.post(url, objetoEnvio).toPromise().then((result) => {
+        this.registro = {};
+        loader.dismiss();
+        alert('Ocorrência salva com sucesso!');
+      }).catch((error) => {
+        alert('Falha ao enviar os dados');
+        console.error('Falha ao gravar registro', error);
+        loader.dismiss();
+      });
+
+      console.log(this.registro);
     }).catch((error) => {
-      alert('Falha ao enviar os dados');
-      console.error('Falha ao gravar registro', error);
+      alert('Falha ao obter posição GPS');
       loader.dismiss();
-    });
-
-    console.log(this.registro);
-    console.log('Clicou em Registrar');
+      console.error(error);
+    })
   }
 
   foto() {
@@ -73,6 +85,7 @@ export class RegistrarPage {
       encodingType: this.camera.EncodingType.JPEG,
       mediaType: this.camera.MediaType.PICTURE
     }
+
 
     this.camera.getPicture(options).then((imageData) => {
      let base64Image = 'data:image/jpeg;base64,' + imageData;
